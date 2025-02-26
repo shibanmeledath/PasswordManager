@@ -33,8 +33,19 @@ namespace PasswordManager.API.Repositories
             return password;
         }
 
-        public async Task<IEnumerable<Passwords>> GetPasswordsAsync()=> await dbContext.Passwords.ToListAsync();
+        public async Task<IEnumerable<Passwords>> GetPasswordsAsync(int pageNumber , int pageSize)
+        {
+            var skipSize = (pageNumber - 1) * pageSize;
+            return await dbContext.Passwords
+                                  .Skip(skipSize)
+                                  .Take(pageSize)
+                                  .ToListAsync();
+        }
 
+        public async Task<int> GetTotalPasswordsCountAsync()
+        {
+            return await dbContext.Passwords.CountAsync();
+        }
         public async  Task UpdateChangesAsync()
         {
           

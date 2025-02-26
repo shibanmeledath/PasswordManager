@@ -7,14 +7,19 @@ function ViewPasswordsComponent()
     const [passwords, setPasswords] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [pageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
+
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPassword = async () => {
             try {
-                const response = await api.get('/');
-                setPasswords(response.data);
+                const response = await api.get(`/?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+                setPasswords(response.data.items); 
+                setTotalPages(response.data.totalPages);
             } catch (e) {
                 setError("Error i Fetching data");
                 console.log(e)
@@ -24,7 +29,18 @@ function ViewPasswordsComponent()
             }
         };
         fetchPassword();
-    }, []);
+    }, [pageNumber, pageSize]);
+    const handleNext = () => {
+        if (pageNumber < totalPages) {
+            setPageNumber(pageNumber + 1);
+        }
+    };
+
+    const handlePrevious = () => {
+        if (pageNumber > 1) {
+            setPageNumber(pageNumber - 1);
+        }
+    };
     const handleEdit = (id) => {
         navigate(`/edit-password/${id}`);
 
@@ -59,6 +75,7 @@ function ViewPasswordsComponent()
             
                 <h2>View Password</h2>
                 {passwords.length > 0 ? (
+                    <div>
                     <table>
                         <thead>
                             <tr>
@@ -92,6 +109,16 @@ function ViewPasswordsComponent()
                         
                         </tbody>
                     </table>
+               <div>
+        <button onClick={handlePrevious} disabled={pageNumber === 1}>
+          Previous
+        </button>
+        <span> Page {pageNumber} of {totalPages} </span>
+        <button onClick={handleNext} disabled={pageNumber === totalPages}>
+          Next
+        </button>
+      </div>
+      </div>
 
                 ): (
                         <div>passwords not found</div>

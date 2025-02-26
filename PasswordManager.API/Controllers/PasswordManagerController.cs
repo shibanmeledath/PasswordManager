@@ -23,10 +23,18 @@ namespace PasswordManager.API.Controllers
             return Ok(mapper.Map<PasswordDto>(passwordDomain));
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll ()
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
         {
-            var passwords = await passwordManagerRepository.GetPasswordsAsync();
-            return Ok(mapper.Map<IEnumerable<PasswordDto>>(passwords));
+           
+            var totalCount = await passwordManagerRepository.GetTotalPasswordsCountAsync();
+
+            var passwords = await passwordManagerRepository.GetPasswordsAsync(pageNumber, pageSize);
+
+            return Ok(new
+            {
+                items = mapper.Map<IEnumerable<PasswordDto>>(passwords),
+                totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+        });
         }
         [HttpGet("{id:guid}")]
 
