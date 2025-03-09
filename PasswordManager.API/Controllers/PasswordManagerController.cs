@@ -14,7 +14,7 @@ namespace PasswordManager.API.Controllers
         private readonly IPasswordManagerRepository passwordManagerRepository = passwordManagerRepository;
 
         [HttpPost]
-        public async Task<IActionResult> Create (AddPasswordDto passwordDto)
+        public async Task<ActionResult<Passwords>> Create (AddPasswordDto passwordDto)
         {
            var passwordDomain= mapper.Map<Passwords>(passwordDto);
 
@@ -23,7 +23,7 @@ namespace PasswordManager.API.Controllers
             return Ok(mapper.Map<PasswordDto>(passwordDomain));
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
+        public async Task<ActionResult<IEnumerable<Passwords>>> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
         {
            
             var totalCount = await passwordManagerRepository.GetTotalPasswordsCountAsync();
@@ -38,7 +38,7 @@ namespace PasswordManager.API.Controllers
         }
         [HttpGet("{id:guid}")]
 
-        public async Task<IActionResult> GetById (Guid id)
+        public async Task<ActionResult<Passwords>> GetById (Guid id)
         {
             var passwordDomain = await passwordManagerRepository.GetPasswordByIdAsync(id);
             if (passwordDomain == null)
@@ -49,7 +49,7 @@ namespace PasswordManager.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Update(Guid id, EditPasswordDto passwordDto)
+        public async Task<ActionResult<Passwords>> Update(Guid id, EditPasswordDto passwordDto)
         {
             var passwordDomain = await passwordManagerRepository.GetPasswordByIdAsync(id);
             if (passwordDomain == null)
@@ -61,7 +61,7 @@ namespace PasswordManager.API.Controllers
             return Ok(mapper.Map<PasswordDto>(passwordDomain));
         }
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ActionResult<Passwords>> Delete(Guid id)
         {
             var passwordDomain = await passwordManagerRepository.GetPasswordByIdAsync(id);
             if (passwordDomain == null)
